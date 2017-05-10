@@ -2,6 +2,7 @@ import subprocess
 import hmac
 from hashlib import sha1
 
+from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseServerError
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
@@ -10,7 +11,6 @@ from django.utils.encoding import force_bytes
 import requests
 from ipaddress import ip_address, ip_network
 
-from ..webhook.local import *
 
 @require_POST
 @csrf_exempt
@@ -35,7 +35,7 @@ def hook(request):
     if sha_name != 'sha1':
         return HttpResponseServerError('Operation not supported.', status=501)
 
-    mac = hmac.new(force_bytes(GITHUB_WEBHOOK_KEY), msg=force_bytes(request.body), digestmod=sha1)
+    mac = hmac.new(force_bytes(settings.GITHUB_WEBHOOK_KEY), msg=force_bytes(request.body), digestmod=sha1)
     if not hmac.compare_digest(force_bytes(mac.hexdigest()), force_bytes(signature)):
         return HttpResponseForbidden('Permission denied.')
 
@@ -47,7 +47,7 @@ def hook(request):
         return HttpResponse('pong')
     elif event == 'push':
         # Deploy some code for example
-        p = subprocess.Popen(['sudo','-u',R10K_USER,R10K_BIN,'deploy','environment','testing','-p'], cwd=R10K_CONFDIR)
+        p = subprocess.Popen(['sudo','-u',settings.R10K_USER,settings.R10K_BIN,'deploy','environment','testing','-p'], cwd=settings.R10K_CONFDIR)
         p.wait()
         print('Success')
         return HttpResponse('success')
