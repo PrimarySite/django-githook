@@ -47,7 +47,7 @@ def hook(request):
         return HttpResponse('pong')
     elif event == 'push':
         # Deploy some code for example
-        p = subprocess.Popen(['sudo','-u',settings.R10K_USER,settings.R10K_BIN,'deploy','environment','testing','-p'], cwd=settings.R10K_CONFDIR)
+        p = subprocess.Popen('sudo -u {} {} deploy environment testing -p'.format(settings.R10K_USER,settings.R10K_BIN), cwd=settings.R10K_CONFDIR, shell=True)
         p.wait()
         print('Success')
         return HttpResponse('success')
