@@ -14,10 +14,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url
-#from django.contrib import admin
 from hook import views
 
 urlpatterns = [
-    #url(r'^admin/', admin.site.urls),
-    url(r'^api/hook/$', views.hook, name='hook'),
+    url(r'^api/hook/$', views.r10k_hook, name='hook'),
+    url(r'^api/enc-hook/$', views.enc_hook, name='enc-hook'),
 ]
