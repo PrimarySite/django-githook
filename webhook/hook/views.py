@@ -47,15 +47,15 @@ def r10k_hook(request):
         return HttpResponse('pong')
     elif event == 'push':
         # Deploy some code for example
-        p = subprocess.Popen(
-            '/usr/local/bin/sudo -u {} {} deploy environment testing -p'.format(
-                settings.R10K_USER,settings.R10K_BIN),
-            cwd=settings.R10K_CONFDIR, shell=True)
+        #p = subprocess.Popen(
+        #    '/usr/local/bin/sudo -u {} {} deploy environment testing -p'.format(
+        #        settings.R10K_USER,settings.R10K_BIN),
+        #    cwd=settings.R10K_CONFDIR, shell=True)
         p = subprocess.Popen(
             '/usr/local/bin/sudo {} {}'.format(
                 settings.HOOK_SCRIPT,settings.HOOK_ENV),
             shell=True)
-        p.wait()
+        #p.wait()
         return HttpResponse('success')
 
     # In case we receive an event that's not ping or push
@@ -102,7 +102,7 @@ def enc_hook(request):
         # Deploy some code for example
         p = subprocess.Popen(
             '/usr/local/bin/sudo -u {0} git fetch && git pull'.format(
-                settings.R10K_USER),
+                settings.PUPPET_USER),
             cwd=settings.ENC_PATH, shell=True)
         p.wait()
         return HttpResponse('success')
