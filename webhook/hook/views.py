@@ -1,4 +1,5 @@
 import subprocess
+import os
 import hmac
 import requests
 
@@ -10,6 +11,9 @@ from django.utils.encoding import force_bytes
 
 from ipaddress import ip_address, ip_network
 from hashlib import sha1
+
+ENV = os.environ.copy()
+ENV['PATH'] = '/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin' + ENV['PATH']
 
 
 @require_POST
@@ -101,10 +105,9 @@ def enc_hook(request):
     elif event == 'push':
         # Deploy some code for example
         p = subprocess.Popen(
-            '/usr/local/bin/sudo -u {0} git fetch && git pull'.format(
-                settings.PUPPET_USER),
-            cwd=settings.ENC_PATH, shell=True)
-        p.wait()
+            ['sudo git fetch; sudo git pull'],
+            cwd=settings.ENC_DIR, shell=True, env=ENV)
+        p.wait(timeout=30)
         return HttpResponse('success')
 
     # In case we receive an event that's not ping or push
