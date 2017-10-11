@@ -9,3 +9,11 @@ The prerequisite python package requirements are in the requirements.txt file (`
 Clone this repository and change the variable settings in the `local.py` in `webhook/webhook` to suit your environment.
 
 You then need to set up a way to run your app and to handle the incoming request; usually I use nginx paired with uwsgi.
+
+The user account will need the permissions to execute commands with sudo, so you'll need to `visudo`, in my case I created a `Cmnd_Alias` with the commands you can execute as the root user.
+E.g.
+
+```
+Cmnd_Alias  USER_CMDS = /usr/local/bin/git, /usr/local/bin/ssh, /usr/local/bin/hook.sh
+user ALL=(root) NOPASSWD:USER_CMDS
+```
