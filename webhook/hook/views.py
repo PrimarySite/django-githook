@@ -58,8 +58,7 @@ def r10k_hook(request):
         p = subprocess.Popen(
             '/usr/local/bin/sudo {} {}'.format(
                 settings.HOOK_SCRIPT,settings.HOOK_ENV),
-            shell=True)
-        #p.wait()
+            shell=True).communicate()
         return HttpResponse('success')
 
     # In case we receive an event that's not ping or push
@@ -105,8 +104,8 @@ def enc_hook(request):
     elif event == 'push':
         # Deploy some code for example
         p = subprocess.Popen(
-            ['sudo git fetch; sudo git pull'],
-            cwd=settings.ENC_DIR, shell=True, env=ENV)
+            ['sudo git pull'],
+            cwd=settings.ENC_DIR, shell=True, env=ENV).communicate()
         p.wait(timeout=30)
         return HttpResponse('success')
 
