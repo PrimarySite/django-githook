@@ -1,7 +1,9 @@
 import subprocess
 import os
+import re
 import hmac
 import requests
+import json
 
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseServerError
@@ -50,14 +52,20 @@ def r10k_hook(request):
     if event == 'ping':
         return HttpResponse('pong')
     elif event == 'push':
-        # Deploy some code for example
-        #p = subprocess.Popen(
-        #    '/usr/local/bin/sudo -u {} {} deploy environment testing -p'.format(
-        #        settings.R10K_USER,settings.R10K_BIN),
-        #    cwd=settings.R10K_CONFDIR, shell=True)
+        # Try to get the branch to pass through to the script to make the deployments quicker
+        request_dict = json.loads(request.body.decode('ASCII'))
+        try:
+            branch = request_dict['ref']
+        except KeyError:
+            pass
+
+        if branch:
+            branch = branch.replace('refs/heads/', '')
+            branch = re.sub(r"[/-]+", "_", branch)
+
         p = subprocess.Popen(
-            '/usr/local/bin/sudo {} {}'.format(
-                settings.HOOK_SCRIPT,settings.HOOK_ENV),
+            '/usr/local/bin/sudo {0} {1}'.format(
+                settings.HOOK_SCRIPT,branch),
             shell=True).communicate()
         return HttpResponse('success')
 
