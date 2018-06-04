@@ -1,6 +1,5 @@
 import subprocess
 import os
-import re
 import hmac
 import requests
 import json
@@ -60,14 +59,25 @@ def r10k_hook(request):
             pass
 
         if branch:
-            branch = branch.replace('refs/heads/', '')
-            branch = re.sub(r"[/-]+", "_", branch)
+            short_branch = branch.replace('refs/heads/', '')
+            pup_env = short_branch.replace('/', '_')
+            pup_env = pup_env.replace('-', '_')
 
-        p = subprocess.Popen(
-            '/usr/local/bin/sudo {0} {1}'.format(
-                settings.HOOK_SCRIPT,branch),
-            shell=True).communicate()
-        return HttpResponse('success')
+            run_script = subprocess.Popen(
+                '/usr/local/bin/sudo {0} {1}'.format(
+                    settings.HOOK_SCRIPT,pup_env),
+                shell=True)
+            run_script.communicate()
+
+            return HttpResponse('success')
+        else:
+            run_script = subprocess.Popen(
+                '/usr/local/bin/sudo {0}'.format(
+                    settings.HOOK_SCRIPT),
+                shell=True).communicate()
+            run_script.communicate()
+
+            return HttpResponse('success')
 
     # In case we receive an event that's not ping or push
     return HttpResponse(status=204)
