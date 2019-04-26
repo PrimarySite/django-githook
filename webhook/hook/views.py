@@ -124,7 +124,6 @@ def enc_hook(request):
         p = subprocess.Popen(
             ['sudo git pull'],
             cwd=settings.ENC_DIR, shell=True, env=ENV).communicate()
-        p.wait(timeout=30)
         return HttpResponse('success')
 
     # In case we receive an event that's not ping or push
